@@ -1,6 +1,10 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using ReportMicroservice.Application.Interfaces;
+using ReportMicroservice.Application.Services;
+using ReportMicroservice.Domain.Interfaces.Repositories;
 using ReportMicroservice.Infrastructure.Persistence;
+using ReportMicroservice.Infrastructure.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,9 @@ builder.Services.AddScoped<IMongoDatabase>(sp =>
     var client = sp.GetRequiredService<IMongoClient>();
     return client.GetDatabase(settings.DatabaseName);
 });
+
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IReportService, ReportService>();
 
 var app = builder.Build();
 
