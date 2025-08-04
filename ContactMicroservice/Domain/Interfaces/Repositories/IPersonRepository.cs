@@ -7,6 +7,7 @@ namespace ContactMicroservice.Domain.Interfaces.Repositories
         Task<List<Person>> GetAllAsync();
         Task<Person> GetByIdAsync(Guid id);
         Task CreateAsync(Person person);
+        Task UpdateAsync(Person person);
         Task DeleteAsync(Guid id);
     }
 }

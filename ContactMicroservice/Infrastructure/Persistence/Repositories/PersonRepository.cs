@@ -22,6 +22,9 @@ namespace ContactMicroservice.Infrastructure.Persistence.Repositories
         public async Task CreateAsync(Person person) =>
             await _persons.InsertOneAsync(person);
 
+        public async Task UpdateAsync(Person person) =>
+       await _persons.ReplaceOneAsync(p => p.Id == person.Id, person);
+
         public async Task DeleteAsync(Guid id) =>
             await _persons.DeleteOneAsync(p => p.Id == id);
     }
