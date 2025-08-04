@@ -1,9 +1,13 @@
-﻿using ReportMicroservice.Domain.Enums;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using ReportMicroservice.Domain.Enums;
 
 namespace ReportMicroservice.Domain.Entities
 {
     public class Report
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.String)]
         public Guid Id { get; set; }
         public DateTime RequestedDate { get; set; }
         public ReportStatus Status { get; set; }
