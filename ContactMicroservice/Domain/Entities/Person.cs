@@ -6,7 +6,7 @@ namespace ContactMicroservice.Domain.Entities
     public class Person
     {
         [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonRepresentation(BsonType.String)]
         public Guid Id { get; set; }
 
         public string FirstName { get; set; }
