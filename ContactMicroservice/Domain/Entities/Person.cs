@@ -1,7 +1,12 @@
-﻿namespace ContactMicroservice.Domain.Entities
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace ContactMicroservice.Domain.Entities
 {
     public class Person
     {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
         public Guid Id { get; set; }
 
         public string FirstName { get; set; }
