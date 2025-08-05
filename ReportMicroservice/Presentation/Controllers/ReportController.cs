@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ReportMicroservice.Application.DTOs;
 using ReportMicroservice.Application.Interfaces;
 
 namespace ReportMicroservice.Presentation.Controllers
@@ -13,13 +12,6 @@ namespace ReportMicroservice.Presentation.Controllers
         public ReportController(IReportService reportService)
         {
             _reportService = reportService;
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateReport([FromBody] ReportDto dto)
-        {
-            var report = await _reportService.CreateReportAsync(dto);
-            return CreatedAtAction(nameof(GetReportById), new { id = report.Id }, report);
         }
 
         [HttpGet]
