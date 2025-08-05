@@ -1,8 +1,10 @@
 using ContactMicroservice.Application.Interfaces;
 using ContactMicroservice.Application.Services;
 using ContactMicroservice.Domain.Interfaces.Repositories;
+using ContactMicroservice.Infrastructure.Integration.Consumers;
 using ContactMicroservice.Infrastructure.Persistence;
 using ContactMicroservice.Infrastructure.Persistence.Repositories;
+using MassTransit;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using System.Text.Json.Serialization;
@@ -33,6 +35,25 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<LocationReportRequestConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ReceiveEndpoint("report-request-queue", e =>
+        {
+            e.ConfigureConsumer<LocationReportRequestConsumer>(context);
+        });
+    });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
