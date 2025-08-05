@@ -21,7 +21,7 @@ namespace ContactMicroservice.Infrastructure.Integration.Consumers
 
             int personCount = await _personRepository.GetCountByLocationAsync(location);
 
-            int phoneCount = 10;
+            int phoneCount = await _personRepository.GetPhoneCountByLocationAsync(location);
 
             var reportResponse = new
             {
