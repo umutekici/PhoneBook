@@ -19,7 +19,7 @@ namespace ContactMicroservice.Infrastructure.Integration.Consumers
 
             var location = message.Location;
 
-            int personCount = 5; 
+            int personCount = await _personRepository.GetCountByLocationAsync(location);
 
             int phoneCount = 10;
 
