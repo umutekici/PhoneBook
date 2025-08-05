@@ -91,7 +91,7 @@ namespace ContactMicroservice.Tests.Presentation
 
             var result = await _controller.CreatePerson(personDto);
 
-            Assert.IsType<BadRequestResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
         [Fact]
@@ -184,13 +184,14 @@ namespace ContactMicroservice.Tests.Presentation
                 Value = "1234567890"
             };
 
-            _mockPersonService.Setup(s => s.AddContactInfoAsync(personId, contactInfoDto))
-                              .ReturnsAsync((Person)null);
+            _mockPersonService
+                .Setup(s => s.AddContactInfoAsync(personId, contactInfoDto))
+                .ReturnsAsync((Person)null);
 
             var result = await _controller.AddContactInfo(personId, contactInfoDto);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal("Person not found.", ((dynamic)notFoundResult.Value).Message);
+            Assert.Equal("Person not found.", notFoundResult.Value);
         }
 
         [Fact]
@@ -228,13 +229,14 @@ namespace ContactMicroservice.Tests.Presentation
             var personId = Guid.NewGuid();
             var contactInfoId = Guid.NewGuid();
 
-            _mockPersonService.Setup(s => s.DeleteContactInfoAsync(personId, contactInfoId))
-                              .ReturnsAsync((Person)null);
+            _mockPersonService
+                .Setup(s => s.DeleteContactInfoAsync(personId, contactInfoId))
+                .ReturnsAsync((Person)null);
 
             var result = await _controller.DeleteContactInfo(personId, contactInfoId);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            Assert.Equal("Person or ContactInfo not found.", ((dynamic)notFoundResult.Value).Message);
+            Assert.Equal("Person or ContactInfo not found.", notFoundResult.Value);
         }
 
     }
