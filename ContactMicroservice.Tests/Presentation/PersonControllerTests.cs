@@ -193,5 +193,49 @@ namespace ContactMicroservice.Tests.Presentation
             Assert.Equal("Person not found.", ((dynamic)notFoundResult.Value).Message);
         }
 
+        [Fact]
+        public async Task DeleteContactInfo_ReturnsOk_WhenPersonAndContactInfoExist()
+        {
+            var personId = Guid.NewGuid();
+            var contactInfoId = Guid.NewGuid();
+
+            var updatedPerson = new Person
+            {
+                Id = personId,
+                FirstName = "Umut",
+                LastName = "Ekici",
+                Company = "MyCompany",
+                ContactInfos = new List<ContactInfo>
+                {
+                    new ContactInfo { Id = contactInfoId, Type = ContactType.Phone, Value = "1234567890" }
+                }
+            };
+
+            _mockPersonService.Setup(s => s.DeleteContactInfoAsync(personId, contactInfoId))
+                              .ReturnsAsync(updatedPerson);
+
+            var result = await _controller.DeleteContactInfo(personId, contactInfoId);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedPerson = Assert.IsType<Person>(okResult.Value);
+            Assert.Equal(personId, returnedPerson.Id);
+            Assert.Single(returnedPerson.ContactInfos);
+        }
+
+        [Fact]
+        public async Task DeleteContactInfo_ReturnsNotFound_WhenPersonOrContactInfoNotFound()
+        {
+            var personId = Guid.NewGuid();
+            var contactInfoId = Guid.NewGuid();
+
+            _mockPersonService.Setup(s => s.DeleteContactInfoAsync(personId, contactInfoId))
+                              .ReturnsAsync((Person)null);
+
+            var result = await _controller.DeleteContactInfo(personId, contactInfoId);
+
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal("Person or ContactInfo not found.", ((dynamic)notFoundResult.Value).Message);
+        }
+
     }
 }
