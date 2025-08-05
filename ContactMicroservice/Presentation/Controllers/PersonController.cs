@@ -18,6 +18,9 @@ namespace ContactMicroservice.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePerson([FromBody] PersonDto personDto)
         {
+            if (personDto == null)
+                return BadRequest(new { Message = "Person data is required." });
+
             var createdPerson = await _personService.CreatePersonAsync(personDto);
             return CreatedAtAction(nameof(GetPersonById), new { id = createdPerson.Id }, createdPerson);
         }
