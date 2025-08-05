@@ -1,6 +1,7 @@
 ﻿using ContactMicroservice.Application.DTOs;
 using ContactMicroservice.Application.Interfaces;
 using ContactMicroservice.Domain.Entities;
+using ContactMicroservice.Domain.Enums;
 using ContactMicroservice.Presentation.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -139,5 +140,58 @@ namespace ContactMicroservice.Tests.Presentation
 
             Assert.IsType<NoContentResult>(result);
         }
+
+        [Fact]
+        public async Task AddContactInfo_ReturnsOk_WhenPersonExists()
+        {
+            var personId = Guid.NewGuid();
+            var contactInfoDto = new ContactInfoDto
+            {
+                Type = ContactType.Email,
+                Value = "umut@example.com"
+            };
+
+            var updatedPerson = new Person
+            {
+                Id = personId,
+                FirstName = "Umut",
+                LastName = "Ekici",
+                Company = "MyCompany",
+                ContactInfos = new List<ContactInfo>
+                {
+                    new ContactInfo { Id = Guid.NewGuid(), Type = ContactType.Email, Value = "umut@example.com" }
+                }
+            };
+
+            _mockPersonService.Setup(s => s.AddContactInfoAsync(personId, contactInfoDto))
+                              .ReturnsAsync(updatedPerson);
+
+            var result = await _controller.AddContactInfo(personId, contactInfoDto);
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedPerson = Assert.IsType<Person>(okResult.Value);
+            Assert.Equal(personId, returnedPerson.Id);
+            Assert.Single(returnedPerson.ContactInfos);
+        }
+
+        [Fact]
+        public async Task AddContactInfo_ReturnsNotFound_WhenPersonDoesNotExist()
+        {
+            var personId = Guid.NewGuid();
+            var contactInfoDto = new ContactInfoDto
+            {
+                Type = ContactType.Phone,
+                Value = "1234567890"
+            };
+
+            _mockPersonService.Setup(s => s.AddContactInfoAsync(personId, contactInfoDto))
+                              .ReturnsAsync((Person)null);
+
+            var result = await _controller.AddContactInfo(personId, contactInfoDto);
+
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Equal("Person not found.", ((dynamic)notFoundResult.Value).Message);
+        }
+
     }
 }
