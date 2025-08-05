@@ -126,5 +126,18 @@ namespace ContactMicroservice.Tests.Presentation
             var returnedList = Assert.IsType<List<Person>>(okResult.Value);
             Assert.Empty(returnedList);
         }
+
+        [Fact]
+        public async Task DeletePerson_ReturnsNoContent()
+        {
+            var personId = Guid.NewGuid();
+
+            _mockPersonService.Setup(s => s.DeletePersonAsync(personId))
+                              .Returns(Task.CompletedTask);
+
+            var result = await _controller.DeletePerson(personId);
+
+            Assert.IsType<NoContentResult>(result);
+        }
     }
 }
