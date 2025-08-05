@@ -1,7 +1,5 @@
-﻿using ReportMicroservice.Application.DTOs;
-using ReportMicroservice.Application.Interfaces;
+﻿using ReportMicroservice.Application.Interfaces;
 using ReportMicroservice.Domain.Entities;
-using ReportMicroservice.Domain.Enums;
 using ReportMicroservice.Domain.Interfaces.Repositories;
 
 namespace ReportMicroservice.Application.Services
@@ -13,17 +11,8 @@ namespace ReportMicroservice.Application.Services
         {
             _reportRepository = reportRepository;
         }
-        public async Task<Report> CreateReportAsync(ReportDto dto)
+        public async Task<Report> CreateReportAsync(Report report)
         {
-            var report = new Report
-            {
-                Id = Guid.NewGuid(),
-                RequestedDate = DateTime.UtcNow,
-                Status = ReportStatus.Preparing,
-                Location = dto.Location,
-                PersonCount = 0,
-                PhoneCount = 0
-            };
             await _reportRepository.CreateAsync(report);
             return report;
         }
