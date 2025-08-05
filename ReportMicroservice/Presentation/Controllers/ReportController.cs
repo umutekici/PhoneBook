@@ -41,7 +41,7 @@ namespace ReportMicroservice.Presentation.Controllers
         public async Task<IActionResult> RequestReport([FromBody] ReportLocationDto reportLocationDto)
         {
             var reportId = Guid.NewGuid();
-            var requestedDate = DateTime.UtcNow;
+            var requestedDate = DateTime.Now;
 
             await _reportService.CreateReportAsync(new Report
             {
