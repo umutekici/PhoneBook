@@ -1,4 +1,5 @@
-﻿using ContactMicroservice.Application.Interfaces;
+﻿using ContactMicroservice.Application.DTOs;
+using ContactMicroservice.Application.Interfaces;
 using ContactMicroservice.Domain.Entities;
 using ContactMicroservice.Presentation.Controllers;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +52,45 @@ namespace ContactMicroservice.Tests.Presentation
             var result = await _controller.GetPersonById(personId);
 
             Assert.IsType<NotFoundResult>(result);
+        }
+
+        [Fact]
+        public async Task CreatePerson_ReturnsCreatedAtActionResult_WithCreatedPerson()
+        {
+            var personDto = new PersonDto
+            {
+                FirstName = "Umut",
+                LastName = "Ekici",
+                Company = "MyCompany"
+            };
+
+            var createdPerson = new Person
+            {
+                Id = Guid.NewGuid(),
+                FirstName = personDto.FirstName,
+                LastName = personDto.LastName,
+                Company = personDto.Company
+            };
+
+            _mockPersonService.Setup(s => s.CreatePersonAsync(personDto))
+                              .ReturnsAsync(createdPerson);
+
+            var result = await _controller.CreatePerson(personDto);
+
+            var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
+            var returnedPerson = Assert.IsType<Person>(createdAtActionResult.Value);
+            Assert.Equal(createdPerson.Id, returnedPerson.Id);
+            Assert.Equal("Umut", returnedPerson.FirstName);
+        }
+
+        [Fact]
+        public async Task CreatePerson_ReturnsBadRequest_WhenPersonDtoIsNull()
+        {
+            PersonDto personDto = null;
+
+            var result = await _controller.CreatePerson(personDto);
+
+            Assert.IsType<BadRequestResult>(result);
         }
     }
 }
