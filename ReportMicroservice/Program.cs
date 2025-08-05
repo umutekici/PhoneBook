@@ -1,8 +1,10 @@
+using MassTransit;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using ReportMicroservice.Application.Interfaces;
 using ReportMicroservice.Application.Services;
 using ReportMicroservice.Domain.Interfaces.Repositories;
+using ReportMicroservice.Infrastructure.Integration.Consumers;
 using ReportMicroservice.Infrastructure.Persistence;
 using ReportMicroservice.Infrastructure.Persistence.Repositories;
 using System.Text.Json.Serialization;
@@ -33,6 +35,25 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<LocationReportCompletedConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ReceiveEndpoint("report-completed-queue", e =>
+        {
+            e.ConfigureConsumer<LocationReportCompletedConsumer>(context);
+        });
+    });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
