@@ -19,7 +19,7 @@ namespace ContactMicroservice.Presentation.Controllers
         public async Task<IActionResult> CreatePerson([FromBody] PersonDto personDto)
         {
             if (personDto == null)
-                return BadRequest(new { Message = "Person data is required." });
+                return BadRequest("Person data is required.");
 
             var createdPerson = await _personService.CreatePersonAsync(personDto);
             return CreatedAtAction(nameof(GetPersonById), new { id = createdPerson.Id }, createdPerson);
@@ -54,7 +54,7 @@ namespace ContactMicroservice.Presentation.Controllers
         {
             var updatedPerson = await _personService.AddContactInfoAsync(personId, contactInfoDto);
             if (updatedPerson == null)
-                return NotFound(new { Message = "Person not found." });
+                return NotFound("Person not found.");
 
             return Ok(updatedPerson);
         }
@@ -64,7 +64,7 @@ namespace ContactMicroservice.Presentation.Controllers
         {
             var updatedPerson = await _personService.DeleteContactInfoAsync(personId, contactInfoId);
             if (updatedPerson == null)
-                return NotFound(new { Message = "Person or ContactInfo not found." });
+                return NotFound("Person or ContactInfo not found.");
 
             return Ok(updatedPerson);
         }
