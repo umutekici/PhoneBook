@@ -1,4 +1,5 @@
 ﻿using ContactMicroservice.Domain.Entities;
+using ContactMicroservice.Domain.Enums;
 using ContactMicroservice.Domain.Interfaces.Repositories;
 using MongoDB.Driver;
 
@@ -27,5 +28,14 @@ namespace ContactMicroservice.Infrastructure.Persistence.Repositories
 
         public async Task DeleteAsync(Guid id) =>
             await _persons.DeleteOneAsync(p => p.Id == id);
+
+        public async Task<int> GetCountByLocationAsync(string location)
+        {
+            var filter = Builders<Person>.Filter.ElemMatch(p => p.ContactInfos,
+                ci => ci.Type == ContactType.Location && ci.Value == location);
+
+            var count = await _persons.CountDocumentsAsync(filter);
+            return (int)count;
+        }
     }
 }
