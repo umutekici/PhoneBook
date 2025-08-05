@@ -92,5 +92,39 @@ namespace ContactMicroservice.Tests.Presentation
 
             Assert.IsType<BadRequestResult>(result);
         }
+
+        [Fact]
+        public async Task GetAllPersons_ReturnsOk_WithPersonList()
+        {
+            var persons = new List<Person>
+            {
+                new Person { Id = Guid.NewGuid(), FirstName = "Umut", LastName = "Ekici", Company = "CompanyA" },
+                new Person { Id = Guid.NewGuid(), FirstName = "Ali", LastName = "Veli", Company = "CompanyB" }
+            };
+
+            _mockPersonService.Setup(s => s.GetAllPersonsAsync())
+                              .ReturnsAsync(persons);
+
+            var result = await _controller.GetAllPersons();
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedList = Assert.IsType<List<Person>>(okResult.Value);
+            Assert.Equal(2, returnedList.Count);
+        }
+
+        [Fact]
+        public async Task GetAllPersons_ReturnsOk_WithEmptyList()
+        {
+            var persons = new List<Person>();
+
+            _mockPersonService.Setup(s => s.GetAllPersonsAsync())
+                              .ReturnsAsync(persons);
+
+            var result = await _controller.GetAllPersons();
+
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedList = Assert.IsType<List<Person>>(okResult.Value);
+            Assert.Empty(returnedList);
+        }
     }
 }
