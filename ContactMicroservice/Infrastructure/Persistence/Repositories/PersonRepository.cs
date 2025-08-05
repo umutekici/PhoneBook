@@ -37,5 +37,19 @@ namespace ContactMicroservice.Infrastructure.Persistence.Repositories
             var count = await _persons.CountDocumentsAsync(filter);
             return (int)count;
         }
+
+        public async Task<int> GetPhoneCountByLocationAsync(string location)
+        {
+            var locationFilter = Builders<Person>.Filter.ElemMatch(p => p.ContactInfos,
+                ci => ci.Type == ContactType.Location && ci.Value == location);
+
+            var persons = await _persons.Find(locationFilter).ToListAsync();
+
+            int phoneCount = persons
+                .SelectMany(p => p.ContactInfos)
+                .Count(ci => ci.Type == ContactType.Phone);
+
+            return phoneCount;
+        }
     }
 }
